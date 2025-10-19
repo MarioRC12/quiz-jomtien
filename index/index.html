@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Declaração de Jomtien</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --cor-fundo: #f0f2f5;
+            --cor-principal: #ffffff;
+            --cor-texto: #333;
+            --cor-primaria: #4f46e5;
+            --cor-correta: #10b981;
+            --cor-errada: #ef4444;
+            --sombra: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: var(--cor-principal);
+            border-radius: 15px;
+            box-shadow: var(--sombra);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .quiz-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            text-align: center;
+            color: var(--cor-primaria);
+        }
+
+        #question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .answer-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            color: var(--cor-texto);
+            padding: 15px;
+            text-align: left;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover:not([disabled]) {
+            background-color: #e9ecef;
+            border-color: var(--cor-primaria);
+        }
+
+        .btn.correct {
+            background-color: var(--cor-correta);
+            color: white;
+            border-color: var(--cor-correta);
+        }
+
+        .btn.wrong {
+            background-color: var(--cor-errada);
+            color: white;
+            border-color: var(--cor-errada);
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        #next-btn {
+            background-color: var(--cor-primaria);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: none;
+            /* Inicia oculto */
+        }
+
+        #next-btn:hover {
+            background-color: #4338ca;
+        }
+
+        #score-display {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Quiz: Declaração de Jomtien</h1>
+        </div>
+        <div id="quiz-body">
+            <p id="question">Carregando pergunta...</p>
+            <div id="answer-buttons" class="answer-buttons">
+            </div>
+        </div>
+        <div class="controls">
+            <button id="next-btn">Próximo</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Qual princípio importante foi reforçado pela Declaração de Jomtien em relação ao direito à educação?",
+                answers: [
+                    { text: "A educação é um privilégio para quem pode pagar", correct: false },
+                    { text: "A educação é um direito humano fundamental e deve ser garantida a todos", correct: true },
+                    { text: "A educação deve ser opcional para adultos", correct: false },
+                    { text: "A educação deve ser controlada apenas por instituições privadas", correct: false }
+                ]
+            },
+            {
+                question: "Em que país foi realizada a Conferência Mundial sobre Educação para Todos, que originou a Declaração de Jomtien?",
+                answers: [
+                    { text: "Japão", correct: false },
+                    { text: "Tailândia", correct: true },
+                    { text: "Indonésia", correct: false },
+                    { text: "Filipinas", correct: false }
+                ]
+            },
+            {
+                question: "Qual foi o principal objetivo da Declaração de Jomtien?",
+                answers: [
+                    { text: "Incentivar o uso da tecnologia nas escolas", correct: false },
+                    { text: "Garantir educação básica de qualidade para todos, independentemente de idade, gênero ou condição social", correct: true },
+                    { text: "Aumentar o número de universidades no mundo", correct: false },
+                    { text: "Promover o ensino superior gratuito", correct: false }
+                ]
+            },
+            {
+                question: "O Brasil assinou a Declaração de Jomtien em 1993. O que esse ato simbolizou para o país?",
+                answers: [
+                    { text: "Um compromisso internacional com a erradicação do analfabetismo e ampliação do acesso à educação", correct: true },
+                    { text: "A criação de um novo currículo escolar nacional", correct: false },
+                    { text: "A substituição do ensino presencial pelo ensino à distância", correct: false },
+                    { text: "A implementação imediata do ensino bilíngue em todas as escolas públicas", correct: false }
+                ]
+            }
+        ];
+
+        const questionElement = document.getElementById("question");
+        const answerButtonsElement = document.getElementById("answer-buttons");
+        const nextButton = document.getElementById("next-btn");
+        const quizBodyElement = document.getElementById("quiz-body");
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            nextButton.innerHTML = "Próximo";
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            let currentQuestion = questions[currentQuestionIndex];
+            let questionNo = currentQuestionIndex + 1;
+            questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.innerHTML = answer.text;
+                button.classList.add("btn");
+                answerButtonsElement.appendChild(button);
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener("click", selectAnswer);
+            });
+        }
+
+        function resetState() {
+            nextButton.style.display = "none";
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === "true";
+            if (isCorrect) {
+                selectedBtn.classList.add("correct");
+                score++;
+            } else {
+                selectedBtn.classList.add("wrong");
+            }
+
+            Array.from(answerButtonsElement.children).forEach(button => {
+                if (button.dataset.correct === "true") {
+                    button.classList.add("correct");
+                }
+                button.disabled = true;
+            });
+            nextButton.style.display = "block";
+        }
+
+        function showScore() {
+            resetState();
+            let wrongAnswers = questions.length - score;
+            questionElement.innerHTML = `Você finalizou o quiz!`;
+            answerButtonsElement.innerHTML = `
+                <div id="score-display">
+                    <p>Acertos: ${score}</p>
+                    <p>Erros: ${wrongAnswers}</p>
+                </div>
+            `;
+            nextButton.innerHTML = "Tentar Novamente";
+            nextButton.style.display = "block";
+        }
+
+        function handleNextButton() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        }
+
+        nextButton.addEventListener("click", () => {
+            if (currentQuestionIndex < questions.length) {
+                handleNextButton();
+            } else {
+                startQuiz();
+            }
+        });
+
+        startQuiz();
+    </script>
+
+</body>
+
+</html>
